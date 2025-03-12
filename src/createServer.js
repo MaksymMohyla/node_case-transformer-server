@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const { convertToCase } = require('./convertToCase/index');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5700;
 
 const server = createServer((req, res) => {
   const messages = {
@@ -25,19 +25,21 @@ const server = createServer((req, res) => {
         // eslint-disable-next-line max-len
         '"toCase" query param is required. Correct request is: "/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>"',
     });
-  }
 
-  if (!['SNAKE', 'KEBAB', 'UPPER', 'PASCAL', 'CAMEL'].includes(toCase)) {
-    messages.errors.push({
-      message:
-        // eslint-disable-next-line max-len
-        'This case is not supported. Available cases: SNAKE, KEBAB, CAMEL, PASCAL, UPPER.',
-    });
+    if (!['SNAKE', 'KEBAB', 'UPPER', 'PASCAL', 'CAMEL'].includes(toCase)) {
+      messages.errors.push({
+        message:
+          // eslint-disable-next-line max-len
+          'This case is not supported. Available cases: SNAKE, KEBAB, CAMEL, PASCAL, UPPER.',
+      });
+    }
   }
 
   if (messages.errors.length !== 0) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ errors: messages.errors }));
+
+    return;
   }
 
   const { originalCase, convertedText } = convertToCase(
