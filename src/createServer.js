@@ -42,20 +42,30 @@ const server = createServer((req, res) => {
     return;
   }
 
-  const { originalCase, convertedText } = convertToCase(
-    textToTransform,
-    toCase,
-  );
+  try {
+    const { originalCase, convertedText } = convertToCase(
+      textToTransform,
+      toCase,
+    );
 
-  const responseBody = {
-    originalCase,
-    targetCase: toCase,
-    originalText: textToTransform,
-    convertedText,
-  };
+    const goodRespBody = {
+      originalCase,
+      targetCase: toCase,
+      originalText: textToTransform,
+      convertedText,
+    };
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(responseBody));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(goodRespBody));
+  } catch {
+    res.statusCode = 500;
+
+    res.end(
+      JSON.stringify({
+        errors: [{ message: 'An error occurred during processing.' }],
+      }),
+    );
+  }
 });
 
 module.exports = {
